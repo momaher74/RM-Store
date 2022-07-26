@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "375640080830",
+    "project_id": "compeleecommerceapp",
+    "storage_bucket": "compeleecommerceapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375640080830:android:610770ac9b3d8959eeb9ef",
+        "android_client_info": {
+          "package_name": "com.example.buyall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "375640080830-ptb3hrniaeql9i73lmihg4ntrtunbvn8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAahbaFbTQxtubr1eY5Nm2smgNoAyjsRQE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375640080830-ptb3hrniaeql9i73lmihg4ntrtunbvn8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
