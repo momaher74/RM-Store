@@ -20,6 +20,7 @@ class HomeScreen extends StatelessWidget {
         return Scaffold(
           backgroundColor: HexColor("#EBEAEF"),
           appBar: AppBar(
+            backgroundColor: HexColor("#EBEAEF"),
             leading: IconButton(
               onPressed: () {},
               icon: const Icon(
@@ -28,7 +29,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             title: const MyText(
-              str: "Mem Store",
+              str: "RM Store",
               color: Colors.black,
               fontWeight: FontWeight.w500,
             ),
@@ -92,21 +93,9 @@ class HomeScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       MyText(
-                        str: "Feature",
+                        str: "New Products",
                         size: width * .035,
                         fontWeight: FontWeight.w600,
-                      ),
-                      const Spacer(),
-                      TextButton(
-                        onPressed: () {},
-                        child: MyText(
-                          str: "See All",
-                          size: width * .03,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        width: width * .02,
                       ),
                     ],
                   ),
@@ -168,17 +157,6 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                       const Spacer(),
-                      // TextButton(
-                      //   onPressed: () {},
-                      //   child: MyText(
-                      //     str: "See All",
-                      //     size: width * .03,
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   width: width * .02,
-                      // ),
                     ],
                   ),
                   SizedBox(
@@ -188,36 +166,59 @@ class HomeScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Container(
-                        width: width * .12,
+                        width: width * .15,
                         height: height * .08,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                image: AssetImage('assets/images/dress.png'))),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 3),
+                          shape: BoxShape.circle,
+                          image: const DecorationImage(
+                            image: AssetImage(
+                              'assets/images/dress.png',
+                            ),
+                          ),
+                        ),
                       ),
                       Container(
-                        width: width * .12,
+                        width: width * .15,
                         height: height * .08,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                image: AssetImage('assets/images/shirt.png'))),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 3,
+                          ),
+                          shape: BoxShape.circle,
+                          image: const DecorationImage(
+                            image: AssetImage(
+                              'assets/images/shirt.png',
+                            ),
+                          ),
+                        ),
                       ),
                       Container(
-                        width: width * .12,
+                        width: width * .15,
                         height: height * .08,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                image: AssetImage('assets/images/shoes.png'))),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 3),
+                          shape: BoxShape.circle,
+                          image: const DecorationImage(
+                            image: AssetImage(
+                              'assets/images/shoes.png',
+                            ),
+                          ),
+                        ),
                       ),
                       Container(
-                        width: width * .12,
+                        width: width * .15,
                         height: height * .08,
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                image: AssetImage('assets/images/tie.png'))),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 3),
+                          shape: BoxShape.circle,
+                          image: const DecorationImage(
+                            image: AssetImage(
+                              'assets/images/tie.png',
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -228,22 +229,22 @@ class HomeScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       MyText(
-                        str: "New Achieve",
+                        str: "All Products",
                         size: width * .035,
                         fontWeight: FontWeight.w600,
                       ),
                       const Spacer(),
-                      TextButton(
-                        onPressed: () {},
-                        child: MyText(
-                          str: "See All",
-                          size: width * .03,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        width: width * .02,
-                      ),
+                      // TextButton(
+                      //   onPressed: () {},
+                      //   child: MyText(
+                      //     str: "See All",
+                      //     size: width * .03,
+                      //     fontWeight: FontWeight.bold,
+                      //   ),
+                      // ),
+                      // SizedBox(
+                      //   width: width * .03,
+                      // ),
                     ],
                   ),
                   SizedBox(
@@ -251,33 +252,73 @@ class HomeScreen extends StatelessWidget {
                   ),
                   GridView.builder(
                     physics: const NeverScrollableScrollPhysics(),
-                      itemCount: cubit.allProducts.length,
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                    itemCount: cubit.allProducts.length,
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                             childAspectRatio: .58,
-                        crossAxisCount: 2,
-                            crossAxisSpacing: 10 ,
-                            mainAxisSpacing: 10
-                      ),
-                      itemBuilder: (context, index) {
-                        var prod = cubit.allProducts[index];
-                        return ProductWidget(
-                          productDescription: prod.description!,
-                          productName: prod.name!,
-                          imgUrl: prod.prodImgUrl!,
-                          width: width,
-                          height: height,
-                          price: prod.currentPrice.toString(),
-                        );
-                      })
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10),
+                    itemBuilder: (context, index) {
+                      var prod = cubit.allProducts[index];
+                      return ProductWidget(
+                        favFunction: () {
+                          print("FAVVVVVVVVVVVVVV Fun");
+                        },
+                        cartFunction: () {
+                          cubit.aadProductToCart(
+                            name: prod.name!,
+                            currentPrice: prod.currentPrice!,
+                            prodImgUrl: prod.prodImgUrl!,
+                          );
+                        },
+                        productDescription: prod.description!,
+                        productName: prod.name!,
+                        imgUrl: prod.prodImgUrl!,
+                        width: width,
+                        height: height,
+                        price: prod.currentPrice.toString(),
+                        oldPrice: prod.oldPrice.toString(),
+
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
           ),
         );
       },
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is AddToCartErrorState) {
+          var snackBar = const SnackBar(
+            backgroundColor: Colors.red,
+            content: MyText(
+              str: "Sorry there is error, try again ",
+              color: Colors.white,
+            ),
+            duration: Duration(seconds: 2),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            snackBar,
+          );
+        }
+        if (state is AddToCartSuccessState) {
+          var snackBar = const SnackBar(
+            backgroundColor: Colors.green,
+            content: MyText(
+              str: "Added in Cart Successfully ",
+              size: 15,
+              color: Colors.white,
+            ),
+            duration: Duration(seconds: 2),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            snackBar,
+          );
+        }
+      },
     );
   }
 }

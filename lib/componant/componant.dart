@@ -1,4 +1,7 @@
+import 'package:buyall/bloc/app_cubit.dart';
 import 'package:flutter/material.dart';
+
+import '../screens/detailproductscreen.dart';
 
 push(context, screen) {
   Navigator.of(context).push(
@@ -154,13 +157,17 @@ class ProductWidget extends StatelessWidget {
     required this.width,
     required this.height,
     required this.price,
+    required this.oldPrice,
+    required this.cartFunction,
+    required this.favFunction,
   }) : super(key: key);
   double height, width;
-  String imgUrl, productName, productDescription, price;
+  String imgUrl, productName, productDescription, price , oldPrice;
+  Function favFunction, cartFunction;
 
   @override
   Widget build(BuildContext context) {
-    return   Container(
+    return Container(
       height: height * .44,
       width: width * .3,
       padding: EdgeInsets.all(width * .02),
@@ -171,10 +178,25 @@ class ProductWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image(
-            image: NetworkImage(imgUrl),
-            width: width * .4,
-            height: height * .2,
+          InkWell(
+            onTap: () {
+              AppCubit.get(context).x = 1;
+              push(
+                context,
+                DetailedProductScreen(
+                  description: productDescription,
+                  name: productName,
+                  imgUrl: imgUrl,
+                  price: price,
+                  oldPrice: oldPrice,
+                ),
+              );
+            },
+            child: Image(
+              image: NetworkImage(imgUrl),
+              width: width * .4,
+              height: height * .2,
+            ),
           ),
           SizedBox(
             height: height * .02,
@@ -199,13 +221,15 @@ class ProductWidget extends StatelessWidget {
           Row(
             children: [
               MyText(
-                  str: price,
+                  str: "$price LE",
                   size: width * .03,
                   fontWeight: FontWeight.bold,
                   color: Colors.black),
               const Spacer(),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  favFunction();
+                },
                 child: Icon(
                   //<-- SEE HERE
                   Icons.favorite,
@@ -217,8 +241,8 @@ class ProductWidget extends StatelessWidget {
                     shadowColor: Colors.red,
                     shape: const CircleBorder(),
                     padding: EdgeInsets.all(width * .02)
-                  // ,// <-- SEE HERE
-                ),
+                    // ,// <-- SEE HERE
+                    ),
               ),
             ],
           ),
@@ -229,20 +253,21 @@ class ProductWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  cartFunction();
+                },
                 child: Icon(
-                  //<-- SEE HERE
-                  Icons.remove_shopping_cart_rounded,
+                  Icons.shopping_cart,
                   color: Colors.white,
                   size: width * .05,
                 ),
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
+                    primary: Colors.blueGrey,
                     shadowColor: Colors.red,
                     shape: const CircleBorder(),
                     padding: EdgeInsets.all(width * .02)
-                  // ,// <-- SEE HERE
-                ),
+                    // ,// <-- SEE HERE
+                    ),
               ),
             ],
           ),

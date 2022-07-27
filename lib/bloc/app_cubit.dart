@@ -5,6 +5,8 @@ import 'package:buyall/componant/componant.dart';
 import 'package:buyall/layout/cartscreen.dart';
 import 'package:buyall/layout/favscreen.dart';
 import 'package:buyall/models/addproductmodel.dart';
+import 'package:buyall/models/cartmodel.dart';
+import 'package:buyall/models/ordermodel.dart';
 import 'package:buyall/models/registermodel.dart';
 import 'package:buyall/layout/homescreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -218,7 +220,7 @@ class AppCubit extends Cubit<AppState> {
   List<AddProdModel> womanWatchesList = [];
   List<AddProdModel> accessoriesList = [];
   List<AddProdModel> favProducts = [];
-  List<AddProdModel> cartProducts = [];
+  List<CartModel> cartProducts = [];
   List<AddProdModel> newProducts = [];
   List<AddProdModel> allProducts = [];
   List<String> categories = [
@@ -246,13 +248,6 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         menClothesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
-
-        if (element.data()["inFav"] == true) {
-          favProducts.add(AddProdModel.formJson(element.data()));
-        }
-        if (element.data()["inCart"] == true) {
-          cartProducts.add(AddProdModel.formJson(element.data()));
-        }
       }
 
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
@@ -273,13 +268,6 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         menWatchesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
-
-        if (element.data()["inFav"] == true) {
-          favProducts.add(AddProdModel.formJson(element.data()));
-        }
-        if (element.data()["inCart"] == true) {
-          cartProducts.add(AddProdModel.formJson(element.data()));
-        }
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetMenWatchesCatSuccessState());
@@ -299,13 +287,6 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         womanWatchesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
-
-        if (element.data()["inFav"] == true) {
-          favProducts.add(AddProdModel.formJson(element.data()));
-        }
-        if (element.data()["inCart"] == true) {
-          cartProducts.add(AddProdModel.formJson(element.data()));
-        }
       }
 
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
@@ -327,13 +308,6 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         womanClothesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
-
-        if (element.data()["inFav"] == true) {
-          favProducts.add(AddProdModel.formJson(element.data()));
-        }
-        if (element.data()["inCart"] == true) {
-          cartProducts.add(AddProdModel.formJson(element.data()));
-        }
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetWomanClothesCatSuccessState());
@@ -353,13 +327,6 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         accessoriesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
-
-        if (element.data()["inFav"] == true) {
-          favProducts.add(AddProdModel.formJson(element.data()));
-        }
-        if (element.data()["inCart"] == true) {
-          cartProducts.add(AddProdModel.formJson(element.data()));
-        }
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetAccessoriesCatSuccessState());
@@ -375,5 +342,90 @@ class AppCubit extends Cubit<AppState> {
   void changeIndex({required int value}) {
     currentIndex = value;
     emit(ChangeCurrentIndexSuccessState());
+  }
+
+  int x = 1;
+
+  void incrementX() {
+    x++;
+    emit(ChangeCurrentIndexSuccessState());
+  }
+
+  void decrementX() {
+    x--;
+    emit(ChangeCurrentIndexSuccessState());
+  }
+
+  void aadProductToCart({
+    required String name,
+    required double currentPrice,
+    required String prodImgUrl,
+  }) {
+    emit(AddToCartLoadingState());
+    CartModel cartModel = CartModel(
+      name: name,
+      currentPrice: currentPrice,
+      prodImgUrl: prodImgUrl,
+    );
+    FirebaseFirestore.instance
+        .collection("cart")
+        .add(cartModel.toMap())
+        .then((value) {
+      emit(AddToCartSuccessState());
+    }).catchError((error) {
+      emit(AddToCartErrorState());
+    });
+  }
+
+  void makeOrder({
+    required String name,
+    required double currentPrice,
+    required String prodImgUrl,
+    required int count,
+  }) {
+    emit(MakeOrderLoadingState());
+    OrderModel orderModel = OrderModel(
+      name: name,
+      currentPrice: currentPrice,
+      prodImgUrl: prodImgUrl,
+      count: count,
+    );
+    FirebaseFirestore.instance
+        .collection("orders")
+        .add(orderModel.toMap())
+        .then((value) {
+      emit(MakeOrderSuccessState());
+    }).catchError((error) {
+      emit(MakeOrderErrorState());
+    });
+  }
+
+  List cartProductsId = [];
+
+  void getCartProducts() {
+    cartProducts = [];
+    emit(GetCartLoadingState());
+    FirebaseFirestore.instance.collection("cart").get().then((value) {
+      for (var element in value.docs) {
+        cartProducts.add(CartModel.formJson(element.data()));
+        cartProductsId.add(element.id);
+      }
+      emit(GetCartSuccessState());
+    }).catchError((error) {
+      emit(GetCartErrorState());
+    });
+  }
+
+  void deleteCartProduct({required String id}) {
+    emit(DeleteProdFromCartLoadingState());
+    FirebaseFirestore.instance
+        .collection("cart")
+        .doc(id)
+        .delete()
+        .then((value) {
+      getCartProducts();
+    }).catchError((error) {
+      emit(DeleteProdFromCartErrorState());
+    });
   }
 }

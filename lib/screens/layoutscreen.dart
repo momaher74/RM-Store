@@ -1,6 +1,7 @@
 import 'package:buyall/bloc/app_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hexcolor/hexcolor.dart';
 
 class LayoutScreen extends StatelessWidget {
   const LayoutScreen({Key? key}) : super(key: key);
@@ -18,9 +19,14 @@ class LayoutScreen extends StatelessWidget {
           backgroundColor: Colors.white,
           body: cubit.screens[cubit.currentIndex],
           bottomNavigationBar: BottomNavigationBar(
-            currentIndex: cubit.currentIndex,
+            selectedItemColor: Colors.black,
+            backgroundColor: HexColor("#EBEAEF"),
             onTap: (value) {
               cubit.changeIndex(value: value);
+              if (value == 2) {
+                cubit.getCartProducts();
+              }
+              if (value == 1) {}
             },
             items: [
               BottomNavigationBarItem(
@@ -32,16 +38,17 @@ class LayoutScreen extends StatelessWidget {
               ),
               BottomNavigationBarItem(
                   icon: Icon(
-                    Icons.favorite_outline,
+                    Icons.favorite,
                     size: width * .05,
                   ),
                   label: "Favourite"),
               BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.shopping_cart,
-                    size: width * .05,
-                  ),
-                  label: "Cart"),
+                icon: Icon(
+                  Icons.shopping_cart,
+                  size: width * .05,
+                ),
+                label: "Cart",
+              ),
               // BottomNavigationBarItem(icon: Icon(Icons.settings ,size: width*.05,),label: "Favourite" ),
             ],
           ),

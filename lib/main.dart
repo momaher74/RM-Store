@@ -1,5 +1,6 @@
 import 'package:buyall/bloc/app_cubit.dart';
 import 'package:buyall/componant/constant.dart';
+import 'package:buyall/screens/detailproductscreen.dart';
 import 'package:buyall/screens/layoutscreen.dart';
 import 'package:buyall/screens/loginscreen.dart';
 import 'package:buyall/shared/sharedpref.dart';
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
         ..getWomanWatchesCat()
         ..getWomanClothesCat()
         ..getMenWatchesCat()
-        ..getAccessoriesCat(),
+        ..getAccessoriesCat()..getCartProducts(),
       child: BlocConsumer<AppCubit, AppState>(
         builder: (context, state) {
           return MaterialApp(
