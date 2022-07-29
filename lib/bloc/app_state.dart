@@ -128,3 +128,10 @@ class MakeOrderErrorState extends AppState {}
 class ProductExistInCartState extends AppState {}
 
 class ProductExistInFavState extends AppState {}
+
+class HomeSearchLoadingState extends AppState {}
+
+class HomeSearchSuccessState extends AppState {}
+
+class HomeSearchErrorState extends AppState {}
+

@@ -555,4 +555,20 @@ class AppCubit extends Cubit<AppState> {
       emit(MakeOrderErrorState());
     });
   }
+
+  var valueController = TextEditingController();
+
+  List homeSearchResults = [];
+
+  void homeSearch({required String value}) {
+    emit(HomeSearchLoadingState());
+    for (var i in allProducts) {
+      // print(i.name!.substring(0, value.length).toLowerCase().toString());
+      if (i.name!.substring(0, value.length).toLowerCase().toString() ==
+          value.toLowerCase()) {
+        homeSearchResults.add(i);
+      }
+    }
+    // print("items = " + homeSearchResults.length.toString());
+  }
 }

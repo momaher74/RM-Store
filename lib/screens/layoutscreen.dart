@@ -28,6 +28,10 @@ class LayoutScreen extends StatelessWidget {
               if (value == 1) {
                 cubit.getFavProducts();
               }
+              if (value == 0) {
+                cubit.homeSearchResults=[];
+                cubit.valueController.clear();
+              }
               cubit.changeIndex(value: value);
             },
             items: [

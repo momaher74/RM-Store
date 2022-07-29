@@ -1,6 +1,7 @@
 import 'package:buyall/bloc/app_cubit.dart';
 import 'package:buyall/componant/componant.dart';
 import 'package:buyall/screens/addproductscreen.dart';
+import 'package:buyall/screens/catscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -14,7 +15,6 @@ class HomeScreen extends StatelessWidget {
     var height = size.height;
     var width = size.width;
     var cubit = AppCubit.get(context);
-
     return BlocConsumer<AppCubit, AppState>(
       builder: (context, state) {
         return Scaffold(
@@ -70,6 +70,11 @@ class HomeScreen extends StatelessWidget {
                     height: height * .06,
                     width: width * .9,
                     child: TextFormField(
+                      controller: cubit.valueController,
+                      onFieldSubmitted: (String value) {
+                        cubit.homeSearchResults = [];
+                        cubit.homeSearch(value: value);
+                      },
                       decoration: InputDecoration(
                         prefixIcon: const Icon(Icons.search),
                         label: const MyText(
@@ -90,214 +95,397 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(
                     height: height * .03,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      MyText(
-                        str: "New Products",
-                        size: width * .035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: height * .03,
-                  ),
-                  if (cubit.newProducts.isNotEmpty)
-                    SizedBox(
-                      width: width * .9,
-                      height: height * .32,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (context, index) {
-                          return SizedBox(
-                            width: width * .3,
-                            height: height * .3,
-                            child: Card(
-                              elevation: 5,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Image(
-                                    image: NetworkImage(
-                                        cubit.newProducts[index].prodImgUrl!),
-                                    width: width * .3,
-                                    height: height * .25,
-                                  ),
-                                  SizedBox(
-                                    width: width * .22,
-                                    child: MyText(
-                                      str: cubit.newProducts[index].name!,
-                                      size: width * .032,
-                                      fontWeight: FontWeight.w500,
+                  if (state is! HomeSearchLoadingState ||
+                      cubit.homeSearchResults.isEmpty)
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            MyText(
+                              str: "New Products",
+                              size: width * .035,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: height * .03,
+                        ),
+                        if (cubit.newProducts.isNotEmpty)
+                          SizedBox(
+                            width: width * .9,
+                            height: height * .32,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return SizedBox(
+                                  width: width * .3,
+                                  height: height * .3,
+                                  child: Card(
+                                    elevation: 5,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Image(
+                                          image: NetworkImage(cubit
+                                              .newProducts[index].prodImgUrl!),
+                                          width: width * .3,
+                                          height: height * .25,
+                                        ),
+                                        SizedBox(
+                                          width: width * .22,
+                                          child: MyText(
+                                            str: cubit.newProducts[index].name!,
+                                            size: width * .032,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        MyText(
+                                          str: cubit
+                                              .newProducts[index].currentPrice!
+                                              .toString(),
+                                          size: width * .03,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  MyText(
-                                    str: cubit.newProducts[index].currentPrice!
-                                        .toString(),
-                                    size: width * .03,
+                                );
+                              },
+                              shrinkWrap: true,
+                              itemCount: cubit.newProducts.length,
+                            ),
+                          ),
+                        if (cubit.newProducts.isEmpty)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              CircularProgressIndicator(),
+                            ],
+                          ),
+                        SizedBox(
+                          height: height * .03,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            MyText(
+                              str: "Category",
+                              size: width * .035,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
+                        SizedBox(
+                          height: height * .025,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                              onTap: (){
+                                push(context,CategoryScreen(products: cubit.menClothesList, title: "Men Clothes"));
+                              },
+                              child: Container(
+                                width: width * .15,
+                                height: height * .08,
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.blue, width: 3),
+                                  shape: BoxShape.circle,
+                                  image: const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/dress.png',
+                                    ),
                                   ),
-                                ],
+                                ),
                               ),
                             ),
-                          );
-                        },
-                        shrinkWrap: true,
-                        itemCount: cubit.newProducts.length,
-                      ),
+                            Container(
+                              width: width * .15,
+                              height: height * .08,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.blue,
+                                  width: 3,
+                                ),
+                                shape: BoxShape.circle,
+                                image: const DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/shirt.png',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: width * .15,
+                              height: height * .08,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.blue, width: 3),
+                                shape: BoxShape.circle,
+                                image: const DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/shoes.png',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: width * .15,
+                              height: height * .08,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.blue, width: 3),
+                                shape: BoxShape.circle,
+                                image: const DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/tie.png',
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Container(
+                              width: width * .15,
+                              height: height * .08,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.blue, width: 3),
+                                shape: BoxShape.circle,
+                                image: const DecorationImage(
+                                  image: AssetImage(
+                                    'assets/images/tie.png',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: height * .015,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            MyText(
+                              str: "All Products",
+                              size: width * .035,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            const Spacer(),
+                          ],
+                        ),
+                        SizedBox(
+                          height: height * .03,
+                        ),
+                        if (cubit.allProducts.isNotEmpty)
+                          GridView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: cubit.allProducts.length,
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              childAspectRatio: .58,
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemBuilder: (context, index) {
+                              var prod = cubit.allProducts[index];
+                              String prodId = cubit.allProductsId[index];
+                              return ProductWidget(
+                                favFunction: () {
+                                  cubit.aadProductToFav(
+                                    name: prod.name!,
+                                    currentPrice: prod.currentPrice!,
+                                    oldPrice: prod.oldPrice!,
+                                    prodImgUrl: prod.prodImgUrl!,
+                                    prodId: prodId,
+                                    description: prod.description!,
+                                  );
+                                },
+                                cartFunction: () {
+                                  cubit.aadProductToCart(
+                                    name: prod.name!,
+                                    currentPrice: prod.currentPrice!,
+                                    prodImgUrl: prod.prodImgUrl!,
+                                    prodId: prodId,
+                                    counter: 1,
+                                  );
+                                },
+                                productDescription: prod.description!,
+                                productName: prod.name!,
+                                imgUrl: prod.prodImgUrl!,
+                                width: width,
+                                height: height,
+                                price: prod.currentPrice.toString(),
+                                oldPrice: prod.oldPrice.toString(),
+                                prodId: prodId,
+                              );
+                            },
+                          ),
+                        if (cubit.allProducts.isEmpty)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              CircularProgressIndicator(),
+                            ],
+                          )
+                      ],
                     ),
-                  SizedBox(
-                    height: height * .03,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      MyText(
-                        str: "Category",
-                        size: width * .035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
-                  SizedBox(
-                    height: height * .025,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Container(
-                        width: width * .15,
-                        height: height * .08,
+                  if (state is HomeSearchLoadingState &&
+                      cubit.homeSearchResults.isEmpty)
+                    const LinearProgressIndicator(),
+                  ListView.builder(
+                    itemBuilder: (context, int index) {
+                      var prod = cubit.homeSearchResults[index];
+                      return Container(
+                        margin: EdgeInsets.all(width * .025),
+                        padding: EdgeInsets.all(width * .025),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue, width: 3),
-                          shape: BoxShape.circle,
-                          image: const DecorationImage(
-                            image: AssetImage(
-                              'assets/images/dress.png',
-                            ),
-                          ),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(width * .025),
                         ),
-                      ),
-                      Container(
-                        width: width * .15,
-                        height: height * .08,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.blue,
-                            width: 3,
-                          ),
-                          shape: BoxShape.circle,
-                          image: const DecorationImage(
-                            image: AssetImage(
-                              'assets/images/shirt.png',
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: width * .3,
+                                  height: height * .15,
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: NetworkImage(prod.prodImgUrl!),
+                                    ),
+                                    color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.circular(width * .05),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: width * .03,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          child: MyText(
+                                            str: prod.name!,
+                                            size: width * .04,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                          width: width * .3,
+                                        ),
+                                        SizedBox(
+                                          width: width * .02,
+                                        ),
+                                        Column(
+                                          children: [
+                                            SizedBox(
+                                              width: width * .15,
+                                              child: MyText(
+                                                str: "${prod.currentPrice} LE",
+                                                size: width * .03,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.blue,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: width * .005,
+                                            ),
+                                            SizedBox(
+                                              width: width * .15,
+                                              child: Text(
+                                                "${prod.oldPrice} LE",
+                                                style: TextStyle(
+                                                  color: Colors.grey,
+                                                  fontSize: width * .022,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: height * .03,
+                                    ),
+                                    SizedBox(
+                                      width: width * .4,
+                                      child: Text(
+                                        prod.description!,
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: width * .022,
+                                          // decoration: TextDecoration.lineThrough,
+                                        ),
+                                        maxLines: 5,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: width * .15,
-                        height: height * .08,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue, width: 3),
-                          shape: BoxShape.circle,
-                          image: const DecorationImage(
-                            image: AssetImage(
-                              'assets/images/shoes.png',
+                            SizedBox(
+                              height: height * .03,
                             ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        width: width * .15,
-                        height: height * .08,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue, width: 3),
-                          shape: BoxShape.circle,
-                          image: const DecorationImage(
-                            image: AssetImage(
-                              'assets/images/tie.png',
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                MyElevatedButton(
+                                  onPressed: () {
+                                    // showOrderDialog(id: prodId, prod: prod);
+                                  },
+                                  widget: const MyText(
+                                    str: "Order",
+                                    color: Colors.white,
+                                  ),
+                                  width: width * .65,
+                                  height: height * .06,
+                                  color: Colors.black,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    cubit.aadProductToCart(
+                                      name: prod.name!,
+                                      currentPrice: prod.currentPrice!,
+                                      prodImgUrl: prod.prodImgUrl!,
+                                      prodId: "",
+                                      counter: 1,
+                                    );
+                                  },
+                                  child: Icon(
+                                    Icons.shopping_cart,
+                                    color: Colors.white,
+                                    size: width * .075,
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.blueGrey,
+                                    shadowColor: Colors.red,
+                                    shape: const CircleBorder(),
+                                    padding: EdgeInsets.all(
+                                      width * .02,
+                                    ),
+                                    // ,// <-- SEE HERE
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                          ],
                         ),
-                      ),
-                      Container(
-                        width: width * .15,
-                        height: height * .08,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blue, width: 3),
-                          shape: BoxShape.circle,
-                          image: const DecorationImage(
-                            image: AssetImage(
-                              'assets/images/tie.png',
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: height * .015,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      MyText(
-                        str: "All Products",
-                        size: width * .035,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      const Spacer(),
-                    ],
-                  ),
-                  SizedBox(
-                    height: height * .03,
-                  ),
-                  GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: cubit.allProducts.length,
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      childAspectRatio: .58,
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemBuilder: (context, index) {
-                      var prod = cubit.allProducts[index];
-                      String prodId = cubit.allProductsId[index];
-                      return ProductWidget(
-                        favFunction: () {
-                          cubit.aadProductToFav(
-                            name: prod.name!,
-                            currentPrice: prod.currentPrice!,
-                            oldPrice: prod.oldPrice!,
-                            prodImgUrl: prod.prodImgUrl!,
-                            prodId: prodId,
-                            description: prod.description!,
-                          );
-                        },
-                        cartFunction: () {
-                          cubit.aadProductToCart(
-                            name: prod.name!,
-                            currentPrice: prod.currentPrice!,
-                            prodImgUrl: prod.prodImgUrl!,
-                            prodId: prodId,
-                            counter: 1,
-                          );
-                        },
-                        productDescription: prod.description!,
-                        productName: prod.name!,
-                        imgUrl: prod.prodImgUrl!,
-                        width: width,
-                        height: height,
-                        price: prod.currentPrice.toString(),
-                        oldPrice: prod.oldPrice.toString(),
-                        prodId: prodId,
                       );
                     },
-                  ),
+                    itemCount: cubit.homeSearchResults.length,
+                    shrinkWrap: true,
+                    physics: const BouncingScrollPhysics(),
+                  )
                 ],
               ),
             ),
@@ -305,8 +493,7 @@ class HomeScreen extends StatelessWidget {
         );
       },
       listener: (context, state) {
-
-        if (state is AddToCartErrorState ||state is AddToFavErrorState ) {
+        if (state is AddToCartErrorState || state is AddToFavErrorState) {
           var snackBar = const SnackBar(
             backgroundColor: Colors.red,
             content: MyText(
@@ -379,7 +566,6 @@ class HomeScreen extends StatelessWidget {
             snackBar,
           );
         }
-
       },
     );
   }
