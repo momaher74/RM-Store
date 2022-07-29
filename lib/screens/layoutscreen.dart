@@ -9,7 +9,7 @@ class LayoutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    var height = size.height;
+    // var height = size.height;
     var width = size.width;
     var cubit = AppCubit.get(context);
 
@@ -22,11 +22,13 @@ class LayoutScreen extends StatelessWidget {
             selectedItemColor: Colors.black,
             backgroundColor: HexColor("#EBEAEF"),
             onTap: (value) {
-              cubit.changeIndex(value: value);
               if (value == 2) {
                 cubit.getCartProducts();
               }
-              if (value == 1) {}
+              if (value == 1) {
+                cubit.getFavProducts();
+              }
+              cubit.changeIndex(value: value);
             },
             items: [
               BottomNavigationBarItem(
@@ -49,7 +51,7 @@ class LayoutScreen extends StatelessWidget {
                 ),
                 label: "Cart",
               ),
-              // BottomNavigationBarItem(icon: Icon(Icons.settings ,size: width*.05,),label: "Favourite" ),
+              // BottomNavigationBarItem(icon: Icon(Icons.settings ,size: width*.05,),label: "setting" ),
             ],
           ),
         );

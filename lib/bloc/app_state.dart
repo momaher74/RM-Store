@@ -9,7 +9,7 @@ class ChangeVisibleSuccessState extends AppState {}
 
 class ChangeConfirmVisibleSuccessState extends AppState {}
 
-class ChangeXSuccessState extends AppState {}
+class WrongAmountState extends AppState {}
 
 class RememberUser extends AppState {}
 
@@ -89,11 +89,23 @@ class AddToCartSuccessState extends AppState {}
 
 class AddToCartErrorState extends AppState {}
 
+class AddToFavLoadingState extends AppState {}
+
+class AddToFavSuccessState extends AppState {}
+
+class AddToFavErrorState extends AppState {}
+
 class GetCartLoadingState extends AppState {}
 
 class GetCartSuccessState extends AppState {}
 
 class GetCartErrorState extends AppState {}
+
+class GetFavLoadingState extends AppState {}
+
+class GetFavSuccessState extends AppState {}
+
+class GetFavErrorState extends AppState {}
 
 class DeleteProdFromCartLoadingState extends AppState {}
 
@@ -101,8 +113,18 @@ class DeleteProdFromCartSuccessState extends AppState {}
 
 class DeleteProdFromCartErrorState extends AppState {}
 
+class DeleteProdFromFavLoadingState extends AppState {}
+
+class DeleteProdFromFavSuccessState extends AppState {}
+
+class DeleteProdFromFavErrorState extends AppState {}
+
 class MakeOrderLoadingState extends AppState {}
 
 class MakeOrderSuccessState extends AppState {}
 
 class MakeOrderErrorState extends AppState {}
+
+class ProductExistInCartState extends AppState {}
+
+class ProductExistInFavState extends AppState {}

@@ -3,12 +3,16 @@ class OrderModel {
   double? currentPrice;
   int? count;
   String? prodImgUrl;
+  String? orderDate;
+  String? receiveDate;
 
   OrderModel({
     required this.name,
     required this.currentPrice,
     required this.prodImgUrl,
     required this.count,
+    required this.orderDate,
+    required this.receiveDate,
   });
 
   OrderModel.formJson(Map<String, dynamic> json) {
@@ -16,6 +20,8 @@ class OrderModel {
     count = json['count'];
     currentPrice = json['currentPrice'];
     prodImgUrl = json['prodImgUrl'];
+    orderDate = json['orderDate'];
+    receiveDate = json['receiveDate'];
   }
 
   Map<String, dynamic> toMap() {
@@ -24,6 +30,8 @@ class OrderModel {
       "currentPrice": currentPrice,
       "prodImgUrl": prodImgUrl,
       "count": count,
+      "orderDate": orderDate,
+      "receiveDate": receiveDate,
     };
   }
 }

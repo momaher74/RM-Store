@@ -59,6 +59,7 @@ class HomeScreen extends StatelessWidget {
           body: Padding(
             padding: EdgeInsets.all(width * .05),
             child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -169,7 +170,7 @@ class HomeScreen extends StatelessWidget {
                         width: width * .15,
                         height: height * .08,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 3),
+                          border: Border.all(color: Colors.blue, width: 3),
                           shape: BoxShape.circle,
                           image: const DecorationImage(
                             image: AssetImage(
@@ -183,7 +184,7 @@ class HomeScreen extends StatelessWidget {
                         height: height * .08,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: Colors.white,
+                            color: Colors.blue,
                             width: 3,
                           ),
                           shape: BoxShape.circle,
@@ -198,7 +199,7 @@ class HomeScreen extends StatelessWidget {
                         width: width * .15,
                         height: height * .08,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 3),
+                          border: Border.all(color: Colors.blue, width: 3),
                           shape: BoxShape.circle,
                           image: const DecorationImage(
                             image: AssetImage(
@@ -211,7 +212,20 @@ class HomeScreen extends StatelessWidget {
                         width: width * .15,
                         height: height * .08,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 3),
+                          border: Border.all(color: Colors.blue, width: 3),
+                          shape: BoxShape.circle,
+                          image: const DecorationImage(
+                            image: AssetImage(
+                              'assets/images/tie.png',
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: width * .15,
+                        height: height * .08,
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blue, width: 3),
                           shape: BoxShape.circle,
                           image: const DecorationImage(
                             image: AssetImage(
@@ -234,17 +248,6 @@ class HomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                       const Spacer(),
-                      // TextButton(
-                      //   onPressed: () {},
-                      //   child: MyText(
-                      //     str: "See All",
-                      //     size: width * .03,
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // ),
-                      // SizedBox(
-                      //   width: width * .03,
-                      // ),
                     ],
                   ),
                   SizedBox(
@@ -256,21 +259,32 @@ class HomeScreen extends StatelessWidget {
                     shrinkWrap: true,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                            childAspectRatio: .58,
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10,
-                            mainAxisSpacing: 10),
+                      childAspectRatio: .58,
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
                     itemBuilder: (context, index) {
                       var prod = cubit.allProducts[index];
+                      String prodId = cubit.allProductsId[index];
                       return ProductWidget(
                         favFunction: () {
-                          print("FAVVVVVVVVVVVVVV Fun");
+                          cubit.aadProductToFav(
+                            name: prod.name!,
+                            currentPrice: prod.currentPrice!,
+                            oldPrice: prod.oldPrice!,
+                            prodImgUrl: prod.prodImgUrl!,
+                            prodId: prodId,
+                            description: prod.description!,
+                          );
                         },
                         cartFunction: () {
                           cubit.aadProductToCart(
                             name: prod.name!,
                             currentPrice: prod.currentPrice!,
                             prodImgUrl: prod.prodImgUrl!,
+                            prodId: prodId,
+                            counter: 1,
                           );
                         },
                         productDescription: prod.description!,
@@ -280,7 +294,7 @@ class HomeScreen extends StatelessWidget {
                         height: height,
                         price: prod.currentPrice.toString(),
                         oldPrice: prod.oldPrice.toString(),
-
+                        prodId: prodId,
                       );
                     },
                   ),
@@ -291,7 +305,8 @@ class HomeScreen extends StatelessWidget {
         );
       },
       listener: (context, state) {
-        if (state is AddToCartErrorState) {
+
+        if (state is AddToCartErrorState ||state is AddToFavErrorState ) {
           var snackBar = const SnackBar(
             backgroundColor: Colors.red,
             content: MyText(
@@ -304,12 +319,13 @@ class HomeScreen extends StatelessWidget {
             snackBar,
           );
         }
+
         if (state is AddToCartSuccessState) {
           var snackBar = const SnackBar(
             backgroundColor: Colors.green,
             content: MyText(
               str: "Added in Cart Successfully ",
-              size: 15,
+              size: 13,
               color: Colors.white,
             ),
             duration: Duration(seconds: 2),
@@ -318,6 +334,52 @@ class HomeScreen extends StatelessWidget {
             snackBar,
           );
         }
+
+        if (state is AddToFavSuccessState) {
+          var snackBar = const SnackBar(
+            backgroundColor: Colors.green,
+            content: MyText(
+              str: "Added in Favourites Successfully ",
+              size: 13,
+              color: Colors.white,
+            ),
+            duration: Duration(seconds: 2),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            snackBar,
+          );
+        }
+
+        if (state is ProductExistInCartState) {
+          var snackBar = const SnackBar(
+            backgroundColor: Colors.blueGrey,
+            content: MyText(
+              str: "Product is already in Your Cart ",
+              size: 12,
+              color: Colors.white,
+            ),
+            duration: Duration(seconds: 2),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            snackBar,
+          );
+        }
+
+        if (state is ProductExistInFavState) {
+          var snackBar = const SnackBar(
+            backgroundColor: Colors.blueGrey,
+            content: MyText(
+              str: "Product is already in Your Favourites ",
+              size: 12,
+              color: Colors.white,
+            ),
+            duration: Duration(seconds: 2),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            snackBar,
+          );
+        }
+
       },
     );
   }

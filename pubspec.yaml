@@ -38,6 +38,7 @@ dependencies:
   hexcolor:
   google_fonts:
   flutter_bloc:
+  intl:
   #firebase
   firebase_auth:
   firebase_core:

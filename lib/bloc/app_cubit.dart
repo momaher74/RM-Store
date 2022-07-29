@@ -6,6 +6,7 @@ import 'package:buyall/layout/cartscreen.dart';
 import 'package:buyall/layout/favscreen.dart';
 import 'package:buyall/models/addproductmodel.dart';
 import 'package:buyall/models/cartmodel.dart';
+import 'package:buyall/models/favmodel.dart';
 import 'package:buyall/models/ordermodel.dart';
 import 'package:buyall/models/registermodel.dart';
 import 'package:buyall/layout/homescreen.dart';
@@ -219,10 +220,11 @@ class AppCubit extends Cubit<AppState> {
   List<AddProdModel> womanClothesList = [];
   List<AddProdModel> womanWatchesList = [];
   List<AddProdModel> accessoriesList = [];
-  List<AddProdModel> favProducts = [];
+  List<FavModel> favProducts = [];
   List<CartModel> cartProducts = [];
   List<AddProdModel> newProducts = [];
   List<AddProdModel> allProducts = [];
+  List<String> allProductsId = [];
   List<String> categories = [
     'men clothes',
     'men watches',
@@ -248,6 +250,7 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         menClothesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
+        allProductsId.add(element.id);
       }
 
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
@@ -268,6 +271,7 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         menWatchesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
+        allProductsId.add(element.id);
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetMenWatchesCatSuccessState());
@@ -287,6 +291,7 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         womanWatchesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
+        allProductsId.add(element.id);
       }
 
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
@@ -308,6 +313,7 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         womanClothesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
+        allProductsId.add(element.id);
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetWomanClothesCatSuccessState());
@@ -327,6 +333,7 @@ class AppCubit extends Cubit<AppState> {
       for (var element in value.docs) {
         accessoriesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
+        allProductsId.add(element.id);
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetAccessoriesCatSuccessState());
@@ -344,63 +351,38 @@ class AppCubit extends Cubit<AppState> {
     emit(ChangeCurrentIndexSuccessState());
   }
 
-  int x = 1;
-
-  void incrementX() {
-    x++;
-    emit(ChangeCurrentIndexSuccessState());
-  }
-
-  void decrementX() {
-    x--;
-    emit(ChangeCurrentIndexSuccessState());
-  }
-
   void aadProductToCart({
     required String name,
     required double currentPrice,
     required String prodImgUrl,
+    required String prodId,
+    required int counter,
   }) {
     emit(AddToCartLoadingState());
     CartModel cartModel = CartModel(
       name: name,
       currentPrice: currentPrice,
       prodImgUrl: prodImgUrl,
+      counter: counter,
     );
-    FirebaseFirestore.instance
-        .collection("cart")
-        .add(cartModel.toMap())
-        .then((value) {
-      emit(AddToCartSuccessState());
-    }).catchError((error) {
-      emit(AddToCartErrorState());
-    });
-  }
 
-  void makeOrder({
-    required String name,
-    required double currentPrice,
-    required String prodImgUrl,
-    required int count,
-  }) {
-    emit(MakeOrderLoadingState());
-    OrderModel orderModel = OrderModel(
-      name: name,
-      currentPrice: currentPrice,
-      prodImgUrl: prodImgUrl,
-      count: count,
-    );
-    FirebaseFirestore.instance
-        .collection("orders")
-        .add(orderModel.toMap())
-        .then((value) {
-      emit(MakeOrderSuccessState());
-    }).catchError((error) {
-      emit(MakeOrderErrorState());
-    });
+    if (cartProductsId.contains(prodId) == true) {
+      emit(ProductExistInCartState());
+    } else {
+      FirebaseFirestore.instance
+          .collection("cart")
+          .doc(prodId)
+          .set(cartModel.toMap())
+          .then((value) {
+        emit(AddToCartSuccessState());
+      }).catchError((error) {
+        emit(AddToCartErrorState());
+      });
+    }
   }
 
   List cartProductsId = [];
+  List favProductsId = [];
 
   void getCartProducts() {
     cartProducts = [];
@@ -426,6 +408,151 @@ class AppCubit extends Cubit<AppState> {
       getCartProducts();
     }).catchError((error) {
       emit(DeleteProdFromCartErrorState());
+    });
+  }
+
+  void aadProductToFav({
+    required String name,
+    required double currentPrice,
+    required double oldPrice,
+    required String prodImgUrl,
+    required String prodId,
+    required String description,
+  }) {
+    emit(AddToFavLoadingState());
+    FavModel favModel = FavModel(
+      name: name,
+      currentPrice: currentPrice,
+      prodImgUrl: prodImgUrl,
+      description: description,
+      oldPrice: oldPrice,
+    );
+    if (favProductsId.contains(prodId) == true) {
+      emit(ProductExistInFavState());
+    } else {
+      FirebaseFirestore.instance
+          .collection("fav")
+          .doc(prodId)
+          .set(favModel.toMap())
+          .then((value) {
+        emit(AddToFavSuccessState());
+      }).catchError((error) {
+        emit(AddToFavErrorState());
+      });
+    }
+  }
+
+  void getFavProducts() {
+    favProducts = [];
+    emit(GetFavLoadingState());
+    FirebaseFirestore.instance.collection("fav").get().then((value) {
+      for (var element in value.docs) {
+        favProducts.add(FavModel.formJson(element.data()));
+        favProductsId.add(element.id);
+      }
+      emit(GetFavSuccessState());
+    }).catchError((error) {
+      emit(GetFavErrorState());
+    });
+  }
+
+  void deleteFavProduct({required String id}) {
+    emit(DeleteProdFromFavLoadingState());
+    FirebaseFirestore.instance.collection("fav").doc(id).delete().then((value) {
+      getFavProducts();
+    }).catchError(
+      (error) {
+        emit(DeleteProdFromFavErrorState());
+      },
+    );
+  }
+
+  void makeOrderFromCart({
+    required String name,
+    required double currentPrice,
+    required String prodImgUrl,
+    required int count,
+    required String orderDate,
+    required String receiveDate,
+    required String id,
+  }) {
+    emit(MakeOrderLoadingState());
+    OrderModel orderModel = OrderModel(
+      name: name,
+      currentPrice: currentPrice,
+      prodImgUrl: prodImgUrl,
+      count: count,
+      orderDate: orderDate,
+      receiveDate: receiveDate,
+    );
+    FirebaseFirestore.instance
+        .collection("orders")
+        .add(orderModel.toMap())
+        .then((value) {
+      deleteCartProduct(id: id);
+    }).catchError((error) {
+      emit(MakeOrderErrorState());
+    });
+    emit(MakeOrderSuccessState());
+  }
+
+  void makeOrderFromFav({
+    required String name,
+    required double currentPrice,
+    required String prodImgUrl,
+    required int count,
+    required String orderDate,
+    required String receiveDate,
+    required String id,
+  }) {
+    emit(MakeOrderLoadingState());
+    OrderModel orderModel = OrderModel(
+      name: name,
+      currentPrice: currentPrice,
+      prodImgUrl: prodImgUrl,
+      count: count,
+      orderDate: orderDate,
+      receiveDate: receiveDate,
+    );
+    if (count > 0) {
+      FirebaseFirestore.instance
+          .collection("orders")
+          .add(orderModel.toMap())
+          .then((value) {
+        deleteFavProduct(id: id);
+      }).catchError((error) {
+        emit(MakeOrderErrorState());
+      });
+      emit(MakeOrderSuccessState());
+    } else {
+      emit(WrongAmountState());
+    }
+  }
+
+  void makeOrder({
+    required String name,
+    required double currentPrice,
+    required String prodImgUrl,
+    required int count,
+    required String orderDate,
+    required String receiveDate,
+  }) {
+    emit(MakeOrderLoadingState());
+    OrderModel orderModel = OrderModel(
+      name: name,
+      currentPrice: currentPrice,
+      prodImgUrl: prodImgUrl,
+      count: count,
+      orderDate: orderDate,
+      receiveDate: receiveDate,
+    );
+    FirebaseFirestore.instance
+        .collection("orders")
+        .add(orderModel.toMap())
+        .then((value) {
+      emit(MakeOrderSuccessState());
+    }).catchError((error) {
+      emit(MakeOrderErrorState());
     });
   }
 }

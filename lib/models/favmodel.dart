@@ -1,21 +1,24 @@
-class CartModel {
+class FavModel {
   String? name;
+  String? description;
   double? currentPrice;
+  double? oldPrice;
   String? prodImgUrl;
-  int counter = 1;
 
-  CartModel({
+  FavModel({
     required this.name,
     required this.currentPrice,
     required this.prodImgUrl,
-    required this.counter,
+    required this.description,
+    required this.oldPrice,
   });
 
-  CartModel.formJson(Map<String, dynamic> json) {
+  FavModel.formJson(Map<String, dynamic> json) {
     name = json['name'];
     currentPrice = json['currentPrice'];
     prodImgUrl = json['prodImgUrl'];
-    counter = json['counter'];
+    description = json['description'];
+    oldPrice = json['oldPrice'];
   }
 
   Map<String, dynamic> toMap() {
@@ -23,7 +26,8 @@ class CartModel {
       "name": name,
       "currentPrice": currentPrice,
       "prodImgUrl": prodImgUrl,
-      "counter": counter,
+      "description": description,
+      "oldPrice": oldPrice,
     };
   }
 }

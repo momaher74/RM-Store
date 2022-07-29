@@ -1,4 +1,3 @@
-import 'package:buyall/bloc/app_cubit.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/detailproductscreen.dart';
@@ -160,9 +159,10 @@ class ProductWidget extends StatelessWidget {
     required this.oldPrice,
     required this.cartFunction,
     required this.favFunction,
+    required this.prodId,
   }) : super(key: key);
   double height, width;
-  String imgUrl, productName, productDescription, price , oldPrice;
+  String prodId, imgUrl, productName, productDescription, price, oldPrice;
   Function favFunction, cartFunction;
 
   @override
@@ -180,7 +180,6 @@ class ProductWidget extends StatelessWidget {
         children: [
           InkWell(
             onTap: () {
-              AppCubit.get(context).x = 1;
               push(
                 context,
                 DetailedProductScreen(
@@ -189,6 +188,7 @@ class ProductWidget extends StatelessWidget {
                   imgUrl: imgUrl,
                   price: price,
                   oldPrice: oldPrice,
+                  prodId: prodId,
                 ),
               );
             },
@@ -221,10 +221,11 @@ class ProductWidget extends StatelessWidget {
           Row(
             children: [
               MyText(
-                  str: "$price LE",
-                  size: width * .03,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
+                str: "$price LE",
+                size: width * .03,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
               const Spacer(),
               ElevatedButton(
                 onPressed: () {
@@ -237,7 +238,7 @@ class ProductWidget extends StatelessWidget {
                   size: width * .05,
                 ),
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.black,
+                    primary: Colors.blueGrey,
                     shadowColor: Colors.red,
                     shape: const CircleBorder(),
                     padding: EdgeInsets.all(width * .02)
@@ -262,12 +263,14 @@ class ProductWidget extends StatelessWidget {
                   size: width * .05,
                 ),
                 style: ElevatedButton.styleFrom(
-                    primary: Colors.blueGrey,
-                    shadowColor: Colors.red,
-                    shape: const CircleBorder(),
-                    padding: EdgeInsets.all(width * .02)
-                    // ,// <-- SEE HERE
-                    ),
+                  primary: Colors.black,
+                  shadowColor: Colors.red,
+                  shape: const CircleBorder(),
+                  padding: EdgeInsets.all(
+                    width * .02,
+                  ),
+                  // ,// <-- SEE HERE
+                ),
               ),
             ],
           ),

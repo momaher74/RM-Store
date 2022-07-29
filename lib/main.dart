@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         ..getWomanWatchesCat()
         ..getWomanClothesCat()
         ..getMenWatchesCat()
-        ..getAccessoriesCat()..getCartProducts(),
+        ..getAccessoriesCat(),
       child: BlocConsumer<AppCubit, AppState>(
         builder: (context, state) {
           return MaterialApp(

@@ -3,6 +3,7 @@ import 'package:buyall/componant/componant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:intl/intl.dart';
 
 class DetailedProductScreen extends StatelessWidget {
   DetailedProductScreen({
@@ -12,9 +13,10 @@ class DetailedProductScreen extends StatelessWidget {
     required this.imgUrl,
     required this.price,
     required this.oldPrice,
+    required this.prodId,
   }) : super(key: key);
 
-  String price, name, description, imgUrl, oldPrice;
+  String price, name, description, imgUrl, oldPrice, prodId;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,74 @@ class DetailedProductScreen extends StatelessWidget {
     var height = size.height;
     var width = size.width;
     var cubit = AppCubit.get(context);
+    var amount = TextEditingController();
+    DateTime orderDate = DateTime.now();
+    DateTime receiveDate = orderDate.add(const Duration(
+      days: 7,
+    ));
+    String formattedOrderDate =
+        DateFormat('yyyy-MM-dd – kk:mm').format(orderDate);
+    String formattedReceiveDate = DateFormat('yyyy-MM-dd').format(receiveDate);
+    Future<void> showOrderDialog() async {
+      return showDialog<void>(
+        context: context,
+        barrierDismissible: false, // user must tap button!
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Are you sure ?'),
+            // title: const Text('Are you sure ?'),
+            content: SizedBox(
+              height: height * .06,
+              width: width * .9,
+              child: TextFormField(
+                keyboardType: TextInputType.phone,
+                controller: amount,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.production_quantity_limits),
+                  label: MyText(
+                    str: 'product amount',
+                    size: width * .028,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(width * .03),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(width * .02),
+                    borderSide: const BorderSide(
+                      color: Colors.black45,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            actions: <Widget>[
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Order'),
+                onPressed: () {
+                  cubit.makeOrder(
+                    name: name,
+                    currentPrice: double.parse(price),
+                    prodImgUrl: imgUrl,
+                    count: int.parse(amount.text),
+                    orderDate: formattedOrderDate,
+                    receiveDate: formattedReceiveDate,
+                  );
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return BlocConsumer<AppCubit, AppState>(
       builder: (context, state) {
         return Scaffold(
@@ -33,6 +103,7 @@ class DetailedProductScreen extends StatelessWidget {
             ),
           ),
           body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: [
@@ -46,21 +117,30 @@ class DetailedProductScreen extends StatelessWidget {
                       alignment: Alignment.bottomRight,
                       children: [
                         Container(
-                          width: width * .8,
-                          height: height * .5,
+                          width: width * .92,
+                          height: height * .36,
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: NetworkImage(imgUrl),
                             ),
                             color: Colors.white,
                             borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(width * .06),
-                              topLeft: Radius.circular(width * .06),
+                              topRight: Radius.circular(width * .02),
+                              topLeft: Radius.circular(width * .02),
                             ),
                           ),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            cubit.aadProductToFav(
+                              name: name,
+                              currentPrice: double.parse(price),
+                              oldPrice: double.parse(oldPrice),
+                              prodImgUrl: imgUrl,
+                              prodId: prodId,
+                              description: description,
+                            );
+                          },
                           child: Icon(
                             //<-- SEE HERE
                             Icons.favorite,
@@ -68,7 +148,7 @@ class DetailedProductScreen extends StatelessWidget {
                             size: width * .05,
                           ),
                           style: ElevatedButton.styleFrom(
-                              primary: Colors.black,
+                              primary: Colors.blueGrey,
                               shadowColor: Colors.red,
                               shape: const CircleBorder(),
                               padding: EdgeInsets.all(width * .02)
@@ -78,7 +158,7 @@ class DetailedProductScreen extends StatelessWidget {
                       ],
                     ),
                     SizedBox(
-                      height: height * .42,
+                      height: height * .58,
                     ),
                   ],
                 ),
@@ -88,8 +168,8 @@ class DetailedProductScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(width * .1),
-                      topLeft: Radius.circular(width * .1),
+                      topRight: Radius.circular(width * .06),
+                      topLeft: Radius.circular(width * .06),
                     ),
                   ),
                   child: Padding(
@@ -126,7 +206,7 @@ class DetailedProductScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     MyText(
                                       str: "$price LE",
@@ -136,80 +216,25 @@ class DetailedProductScreen extends StatelessWidget {
                                     SizedBox(
                                       height: height * .01,
                                     ),
-                                    Text("$oldPrice LE",
-                                        style: TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: width * .05,
-                                            decoration:
-                                                TextDecoration.lineThrough))
+                                    Text(
+                                      "$oldPrice LE",
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: width * .035,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
                                   ],
                                 ),
-                                Spacer(),
-                                // Container(
-                                //   padding: EdgeInsets.all(width * .01),
-                                //   decoration: BoxDecoration(
-                                //       color: Colors.white,
-                                //       borderRadius:
-                                //           BorderRadius.circular(width * .1),
-                                //       border: Border.all(
-                                //         color: Colors.black,
-                                //       )),
-                                //   child: Row(
-                                //     children: [
-                                //       ElevatedButton(
-                                //         onPressed: () {
-                                //           if (cubit.x > 1) {
-                                //             cubit.decrementX();
-                                //           }
-                                //         },
-                                //         child: Icon(
-                                //           //<-- SEE HERE
-                                //           Icons.exposure_minus_1,
-                                //           color: Colors.black,
-                                //           size: width * .05,
-                                //         ),
-                                //         style: ElevatedButton.styleFrom(
-                                //             primary: Colors.white,
-                                //             shadowColor: Colors.red,
-                                //             shape: const CircleBorder(),
-                                //             padding: EdgeInsets.all(width * .02)
-                                //             // ,// <-- SEE HERE
-                                //             ),
-                                //       ),
-                                //       SizedBox(
-                                //         width: width * .02,
-                                //       ),
-                                //       MyText(str: cubit.x.toString()),
-                                //       SizedBox(
-                                //         width: width * .02,
-                                //       ),
-                                //       ElevatedButton(
-                                //         onPressed: () {
-                                //           cubit.incrementX();
-                                //         },
-                                //         child: Icon(
-                                //           //<-- SEE HERE
-                                //           Icons.exposure_plus_1_outlined,
-                                //           color: Colors.white,
-                                //           size: width * .05,
-                                //         ),
-                                //         style: ElevatedButton.styleFrom(
-                                //             primary: Colors.black,
-                                //             shadowColor: Colors.red,
-                                //             shape: const CircleBorder(),
-                                //             padding: EdgeInsets.all(width * .02)
-                                //             // ,// <-- SEE HERE
-                                //             ),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
+                                const Spacer(),
                                 ElevatedButton(
                                   onPressed: () {
                                     cubit.aadProductToCart(
                                       currentPrice: double.parse(price),
                                       name: name,
                                       prodImgUrl: imgUrl,
+                                      prodId: prodId,
+                                      counter: 1,
                                     );
                                   },
                                   child: Icon(
@@ -219,15 +244,32 @@ class DetailedProductScreen extends StatelessWidget {
                                     size: width * .07,
                                   ),
                                   style: ElevatedButton.styleFrom(
-                                      primary: Colors.black,
-                                      shadowColor: Colors.red,
-                                      shape: const CircleBorder(),
-                                      padding: EdgeInsets.all(width * .02)
-                                      // ,// <-- SEE HERE
-                                      ),
+                                    primary: Colors.blueGrey,
+                                    shadowColor: Colors.red,
+                                    shape: const CircleBorder(),
+                                    padding: EdgeInsets.all(
+                                      width * .02,
+                                    ),
+                                    // ,// <-- SEE HERE
+                                  ),
                                 ),
                               ],
                             ),
+                          ),
+                          SizedBox(
+                            height: height * .02,
+                          ),
+                          MyElevatedButton(
+                            onPressed: () {
+                              showOrderDialog();
+                            },
+                            widget: const MyText(
+                              str: "Order",
+                              color: Colors.white,
+                            ),
+                            width: width * .8,
+                            height: height * .06,
+                            color: Colors.black,
                           ),
                           SizedBox(
                             height: height * .08,
@@ -243,11 +285,12 @@ class DetailedProductScreen extends StatelessWidget {
         );
       },
       listener: (context, state) {
-        if (state is AddToCartErrorState) {
+        if (state is MakeOrderSuccessState) {
           var snackBar = const SnackBar(
-            backgroundColor: Colors.red,
+            backgroundColor: Colors.green,
             content: MyText(
-              str: "Sorry there is error, try again ",
+              str: "Product ordered Successfully",
+              size: 13,
               color: Colors.white,
             ),
             duration: Duration(seconds: 2),
@@ -256,15 +299,15 @@ class DetailedProductScreen extends StatelessWidget {
             snackBar,
           );
         }
-        if (state is AddToCartSuccessState) {
-          var snackBar = SnackBar(
-            backgroundColor: Colors.green,
+        if (state is WrongAmountState) {
+          var snackBar = const SnackBar(
+            backgroundColor: Colors.red,
             content: MyText(
-              str: "$name is Added in Cart Successfully ",
-              size: 15,
+              str: "  enter correct amount ,please",
+              size: 13,
               color: Colors.white,
             ),
-            duration: const Duration(seconds: 2),
+            duration: Duration(seconds: 2),
           );
           ScaffoldMessenger.of(context).showSnackBar(
             snackBar,

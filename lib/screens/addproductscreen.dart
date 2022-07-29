@@ -1,7 +1,5 @@
 import 'package:buyall/bloc/app_cubit.dart';
 import 'package:buyall/componant/componant.dart';
-import 'package:buyall/componant/constant.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,10 +16,6 @@ class AddProductScreens extends StatelessWidget {
     var prodDescriptionController = TextEditingController();
     var prodCurrentPriceController = TextEditingController();
     var prodOldPriceController = TextEditingController();
-    DateTime now = DateTime.now();
-
-    String convertedDateTime = "${now.year.toString()}-${now.month.toString().padLeft(2,'0')}-${now.day.toString().padLeft(2,'0')} ";
-    print(convertedDateTime);
     return BlocConsumer<AppCubit, AppState>(
       builder: (context, state) {
         return Scaffold(
@@ -69,7 +63,8 @@ class AddProductScreens extends StatelessWidget {
                     child: TextFormField(
                       controller: prodNameController,
                       decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.production_quantity_limits),
+                        prefixIcon:
+                            const Icon(Icons.production_quantity_limits),
                         label: MyText(
                           str: 'product name',
                           size: width * .028,

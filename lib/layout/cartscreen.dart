@@ -1,20 +1,25 @@
 import 'package:buyall/bloc/app_cubit.dart';
 import 'package:buyall/componant/componant.dart';
-import 'package:buyall/componant/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:intl/intl.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   const CartScreen({Key? key}) : super(key: key);
 
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var height = size.height;
     var width = size.width;
     var cubit = AppCubit.get(context);
-    Future<void> _showMyDialog({required String id}) async {
+    Future<void> showMyDialog({required String id}) async {
       return showDialog<void>(
         context: context,
         barrierDismissible: false, // user must tap button!
@@ -34,8 +39,6 @@ class CartScreen extends StatelessWidget {
                 onPressed: () {
                   cubit.deleteCartProduct(id: id);
                   Navigator.of(context).pop();
-
-
                 },
               ),
             ],
@@ -43,6 +46,14 @@ class CartScreen extends StatelessWidget {
         },
       );
     }
+
+    DateTime orderDate = DateTime.now();
+    DateTime receiveDate = orderDate.add(const Duration(
+      days: 7,
+    ));
+    String formattedOrderDate =
+        DateFormat('yyyy-MM-dd – kk:mm').format(orderDate);
+    String formattedReceiveDate = DateFormat('yyyy-MM-dd').format(receiveDate);
     return BlocConsumer<AppCubit, AppState>(
       builder: (context, state) {
         return Scaffold(
@@ -57,6 +68,7 @@ class CartScreen extends StatelessWidget {
           ),
           body: cubit.cartProducts.isNotEmpty
               ? ListView.builder(
+                  physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     var prod = cubit.cartProducts[index];
                     String prodId = cubit.cartProductsId[index];
@@ -87,100 +99,129 @@ class CartScreen extends StatelessWidget {
                                     ),
                                   ),
                                   SizedBox(
-                                    width: width * .03,
+                                    width: width * .02,
                                   ),
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Row(
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: [
-                                          SizedBox(
-                                            child: MyText(
-                                              str: prod.name!,
-                                              size: width * .04,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                            width: width * .3,
+                                          Row(
+                                            children: [
+                                              SizedBox(
+                                                child: MyText(
+                                                  str: prod.name!,
+                                                  size: width * .04,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                                width: width * .3,
+                                              ),
+                                              SizedBox(
+                                                width: width * .15,
+                                                child: MyText(
+                                                  str:
+                                                      "${prod.currentPrice} LE",
+                                                  size: width * .03,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.blue,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                onPressed: () {
+                                                  showMyDialog(id: prodId);
+                                                },
+                                                icon: Icon(
+                                                  Icons.delete,
+                                                  color: Colors.black,
+                                                  size: width * .045,
+                                                ),
+                                              ),
+                                            ],
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
                                           ),
                                           SizedBox(
-                                            width: width * .06,
+                                            height: height * .03,
                                           ),
-                                          SizedBox(
-                                            width: width * .15,
-                                            child: MyText(
-                                              str:
-                                                  prod.currentPrice!.toString(),
-                                              size: width * .03,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.blue,
+                                          Container(
+                                            padding:
+                                                EdgeInsets.all(width * .01),
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                  width * .1,
+                                                ),
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                )),
+                                            child: Row(
+                                              children: [
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    if (prod.counter > 1) {
+                                                      setState(() {
+                                                        prod.counter--;
+                                                      });
+                                                    }
+                                                  },
+                                                  child: Icon(
+                                                    //<-- SEE HERE
+                                                    Icons.exposure_minus_1,
+                                                    color: Colors.black,
+                                                    size: width * .05,
+                                                  ),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary: Colors.white,
+                                                    shadowColor: Colors.red,
+                                                    shape: const CircleBorder(),
+                                                    padding: EdgeInsets.all(
+                                                      width * .02,
+                                                    ),
+                                                    // ,// <-- SEE HERE
+                                                  ),
+                                                ),
+                                                SizedBox(
+                                                  width: width * .02,
+                                                ),
+                                                MyText(
+                                                  str: "${prod.counter}",
+                                                ),
+                                                SizedBox(
+                                                  width: width * .02,
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      prod.counter++;
+                                                    });
+                                                  },
+                                                  child: Icon(
+                                                    //<-- SEE HERE
+                                                    Icons
+                                                        .exposure_plus_1_outlined,
+                                                    color: Colors.white,
+                                                    size: width * .05,
+                                                  ),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    primary: Colors.black,
+                                                    shadowColor: Colors.red,
+                                                    shape: const CircleBorder(),
+                                                    padding: EdgeInsets.all(
+                                                      width * .02,
+                                                    ),
+                                                    // ,// <-- SEE HERE
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
-                                      ),
-                                      SizedBox(
-                                        height: height * .03,
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.all(width * .01),
-                                        decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              width * .1,
-                                            ),
-                                            border: Border.all(
-                                              color: Colors.black,
-                                            )),
-                                        child: Row(
-                                          children: [
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                if (cubit.x > 1) {
-                                                  cubit.decrementX();
-                                                }
-                                              },
-                                              child: Icon(
-                                                //<-- SEE HERE
-                                                Icons.exposure_minus_1,
-                                                color: Colors.black,
-                                                size: width * .05,
-                                              ),
-                                              style: ElevatedButton.styleFrom(
-                                                  primary: Colors.white,
-                                                  shadowColor: Colors.red,
-                                                  shape: const CircleBorder(),
-                                                  padding: EdgeInsets.all(
-                                                      width * .02)
-                                                  // ,// <-- SEE HERE
-                                                  ),
-                                            ),
-                                            SizedBox(
-                                              width: width * .02,
-                                            ),
-                                            MyText(str: cubit.x.toString()),
-                                            SizedBox(
-                                              width: width * .02,
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                cubit.incrementX();
-                                              },
-                                              child: Icon(
-                                                //<-- SEE HERE
-                                                Icons.exposure_plus_1_outlined,
-                                                color: Colors.white,
-                                                size: width * .05,
-                                              ),
-                                              style: ElevatedButton.styleFrom(
-                                                  primary: Colors.black,
-                                                  shadowColor: Colors.red,
-                                                  shape: const CircleBorder(),
-                                                  padding: EdgeInsets.all(
-                                                      width * .02)
-                                                  // ,// <-- SEE HERE
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
                                       ),
                                     ],
                                   ),
@@ -190,7 +231,17 @@ class CartScreen extends StatelessWidget {
                                 height: height * .03,
                               ),
                               MyElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  cubit.makeOrderFromCart(
+                                    name: prod.name!,
+                                    currentPrice: prod.currentPrice!,
+                                    prodImgUrl: prod.prodImgUrl!,
+                                    count: prod.counter,
+                                    orderDate: formattedOrderDate,
+                                    receiveDate: formattedReceiveDate,
+                                    id: prodId,
+                                  );
+                                },
                                 widget: const MyText(
                                   str: "Order",
                                   color: Colors.white,
@@ -202,15 +253,6 @@ class CartScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        IconButton(
-                            onPressed: () {
-                              _showMyDialog(id: prodId);
-                            },
-                            icon: Icon(
-                              Icons.cancel,
-                              color: Colors.black,
-                              size: width * .06,
-                            ))
                       ],
                     );
                   },
@@ -223,7 +265,22 @@ class CartScreen extends StatelessWidget {
                 )),
         );
       },
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is MakeOrderSuccessState) {
+          var snackBar = const SnackBar(
+            backgroundColor: Colors.green,
+            content: MyText(
+              str: "Product ordered Successfully",
+              size: 13,
+              color: Colors.white,
+            ),
+            duration: Duration(seconds: 2),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            snackBar,
+          );
+        }
+      },
     );
   }
 }
