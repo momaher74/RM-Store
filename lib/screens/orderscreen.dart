@@ -4,10 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:intl/intl.dart';
 
 import '../componant/componant.dart';
-import '../models/addproductmodel.dart';
 
 class OrdersScreen extends StatelessWidget {
   OrdersScreen({
@@ -26,13 +24,7 @@ class OrdersScreen extends StatelessWidget {
     var height = size.height;
     var width = size.width;
     var cubit = AppCubit.get(context);
-    DateTime orderDate = DateTime.now();
-    DateTime receiveDate = orderDate.add(const Duration(
-      days: 7,
-    ));
-    String formattedOrderDate =
-        DateFormat('yyyy-MM-dd – kk:mm').format(orderDate);
-    String formattedReceiveDate = DateFormat('yyyy-MM-dd').format(receiveDate);
+
     return BlocConsumer<AppCubit, AppState>(
       builder: (context, state) {
         return Scaffold(
@@ -54,7 +46,6 @@ class OrdersScreen extends StatelessWidget {
                   ListView.builder(
                     itemBuilder: (context, int index) {
                       var prod = products[index];
-                      String prodId = productId[index];
                       return Container(
                         margin: EdgeInsets.all(width * .025),
                         padding: EdgeInsets.all(width * .025),
