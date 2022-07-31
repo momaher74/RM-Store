@@ -2,16 +2,21 @@ import 'package:buyall/bloc/app_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hexcolor/hexcolor.dart';
+import 'package:intl/intl.dart';
 
 import '../componant/componant.dart';
+import '../models/addproductmodel.dart';
 
 class CategoryScreen extends StatelessWidget {
   CategoryScreen({
     Key? key,
     required this.products,
     required this.title,
+    required this.productId,
   }) : super(key: key);
-  List products = [];
+  List<AddProdModel> products = [];
+  List<String> productId = [];
   String? title;
 
   @override
@@ -20,21 +25,35 @@ class CategoryScreen extends StatelessWidget {
     var height = size.height;
     var width = size.width;
     var cubit = AppCubit.get(context);
-
+    DateTime orderDate = DateTime.now();
+    DateTime receiveDate = orderDate.add(const Duration(
+      days: 7,
+    ));
+    String formattedOrderDate =
+        DateFormat('yyyy-MM-dd – kk:mm').format(orderDate);
+    String formattedReceiveDate = DateFormat('yyyy-MM-dd').format(receiveDate);
     return BlocConsumer<AppCubit, AppState>(
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: HexColor("#EBEAEF"),
           appBar: AppBar(
-            title: MyText(str: title!,fontWeight: FontWeight.w400,),
+            backgroundColor: HexColor("#EBEAEF"),
+
+            title: MyText(
+              str: title!,
+              fontWeight: FontWeight.w400,
+            ),
           ),
           body: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
+            // physics: const NeverScrollableScrollPhysics(),
             child: Column(
               children: [
+                SizedBox(height: height*.01,),
                 ListView.builder(
+
                   itemBuilder: (context, int index) {
                     var prod = products[index];
+                    String prodId = productId[index];
                     return Container(
                       margin: EdgeInsets.all(width * .025),
                       padding: EdgeInsets.all(width * .025),
@@ -135,7 +154,14 @@ class CategoryScreen extends StatelessWidget {
                             children: [
                               MyElevatedButton(
                                 onPressed: () {
-                                  // showOrderDialog(id: prodId, prod: prod);
+                                  cubit.makeOrder(
+                                    name: prod.name!,
+                                    currentPrice: prod.currentPrice!,
+                                    prodImgUrl: prod.prodImgUrl!,
+                                    count: 1,
+                                    orderDate: formattedOrderDate,
+                                    receiveDate: formattedReceiveDate,
+                                  );
                                 },
                                 widget: const MyText(
                                   str: "Order",
@@ -147,12 +173,13 @@ class CategoryScreen extends StatelessWidget {
                               ),
                               ElevatedButton(
                                 onPressed: () {
-                                  cubit.aadProductToCart(
+                                  cubit.aadProductToFav(
                                     name: prod.name!,
                                     currentPrice: prod.currentPrice!,
                                     prodImgUrl: prod.prodImgUrl!,
-                                    prodId: "",
-                                    counter: 1,
+                                    prodId: prodId,
+                                    oldPrice: prod.oldPrice!,
+                                    description: prod.description!,
                                   );
                                 },
                                 child: Icon(
@@ -176,7 +203,7 @@ class CategoryScreen extends StatelessWidget {
                                     name: prod.name!,
                                     currentPrice: prod.currentPrice!,
                                     prodImgUrl: prod.prodImgUrl!,
-                                    prodId: "",
+                                    prodId: prodId,
                                     counter: 1,
                                   );
                                 },
@@ -210,7 +237,23 @@ class CategoryScreen extends StatelessWidget {
           ),
         );
       },
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is MakeOrderSuccessState) {
+          var snackBar = const SnackBar(
+            backgroundColor: Colors.green,
+            content: MyText(
+              str: "Product ordered Successfully",
+              size: 13,
+              color: Colors.white,
+            ),
+            duration: Duration(seconds: 2),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            snackBar,
+          );
+        }
+
+      },
     );
   }
 }

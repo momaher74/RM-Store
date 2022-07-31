@@ -216,10 +216,15 @@ class AppCubit extends Cubit<AppState> {
   }
 
   List<AddProdModel> menClothesList = [];
+  List<String> menClothesListId = [];
   List<AddProdModel> menWatchesList = [];
+  List<String> menWatchesListId = [];
   List<AddProdModel> womanClothesList = [];
+  List<String> womanClothesListId = [];
   List<AddProdModel> womanWatchesList = [];
+  List<String> womanWatchesListId = [];
   List<AddProdModel> accessoriesList = [];
+  List<String> accessoriesListId = [];
   List<FavModel> favProducts = [];
   List<CartModel> cartProducts = [];
   List<AddProdModel> newProducts = [];
@@ -251,6 +256,7 @@ class AppCubit extends Cubit<AppState> {
         menClothesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
         allProductsId.add(element.id);
+        menClothesListId.add(element.id);
       }
 
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
@@ -272,6 +278,7 @@ class AppCubit extends Cubit<AppState> {
         menWatchesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
         allProductsId.add(element.id);
+        menWatchesListId.add(element.id);
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetMenWatchesCatSuccessState());
@@ -292,6 +299,7 @@ class AppCubit extends Cubit<AppState> {
         womanWatchesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
         allProductsId.add(element.id);
+        womanWatchesListId.add(element.id);
       }
 
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
@@ -314,6 +322,7 @@ class AppCubit extends Cubit<AppState> {
         womanClothesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
         allProductsId.add(element.id);
+        womanClothesListId.add(element.id);
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetWomanClothesCatSuccessState());
@@ -334,6 +343,7 @@ class AppCubit extends Cubit<AppState> {
         accessoriesList.add(AddProdModel.formJson(element.data()));
         allProducts.add(AddProdModel.formJson(element.data()));
         allProductsId.add(element.id);
+        accessoriesListId.add(element.id);
       }
       newProducts.add(AddProdModel.formJson(value.docs[0].data()));
       emit(GetAccessoriesCatSuccessState());
@@ -553,6 +563,24 @@ class AppCubit extends Cubit<AppState> {
       emit(MakeOrderSuccessState());
     }).catchError((error) {
       emit(MakeOrderErrorState());
+    });
+  }
+
+  List<OrderModel> orders = [];
+
+  List<String> ordersId = [];
+
+  void getOrders() {
+    orders = [];
+    emit(GetOrdersLoadingState());
+    FirebaseFirestore.instance.collection("orders").get().then((value) {
+      for (var element in value.docs) {
+        orders.add(OrderModel.formJson(element.data()));
+        ordersId.add(element.id);
+      }
+      emit(GetOrdersSuccessState());
+    }).catchError((error) {
+      emit(GetOrdersErrorState());
     });
   }
 

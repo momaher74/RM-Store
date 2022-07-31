@@ -107,6 +107,12 @@ class GetFavSuccessState extends AppState {}
 
 class GetFavErrorState extends AppState {}
 
+class GetOrdersLoadingState extends AppState {}
+
+class GetOrdersSuccessState extends AppState {}
+
+class GetOrdersErrorState extends AppState {}
+
 class DeleteProdFromCartLoadingState extends AppState {}
 
 class DeleteProdFromCartSuccessState extends AppState {}
@@ -134,4 +140,3 @@ class HomeSearchLoadingState extends AppState {}
 class HomeSearchSuccessState extends AppState {}
 
 class HomeSearchErrorState extends AppState {}
-

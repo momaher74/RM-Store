@@ -2,6 +2,7 @@ import 'package:buyall/bloc/app_cubit.dart';
 import 'package:buyall/componant/componant.dart';
 import 'package:buyall/screens/addproductscreen.dart';
 import 'package:buyall/screens/catscreen.dart';
+import 'package:buyall/screens/orderscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -35,9 +36,18 @@ class HomeScreen extends StatelessWidget {
             ),
             actions: [
               IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    cubit.getOrders();
+                    push(
+                      context,
+                      OrdersScreen(
+                          products: cubit.orders,
+                          title: "Orders",
+                          productId: cubit.ordersId),
+                    );
+                  },
                   icon: const Icon(
-                    Icons.notifications_active_outlined,
+                    Icons.reorder,
                     color: Colors.black,
                   )),
               SizedBox(
@@ -71,6 +81,10 @@ class HomeScreen extends StatelessWidget {
                     width: width * .9,
                     child: TextFormField(
                       controller: cubit.valueController,
+                      onChanged: (String value) {
+                        cubit.homeSearchResults = [];
+                        cubit.homeSearch(value: value);
+                      },
                       onFieldSubmitted: (String value) {
                         cubit.homeSearchResults = [];
                         cubit.homeSearch(value: value);
@@ -92,22 +106,176 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (state is HomeSearchLoadingState &&
+                      cubit.homeSearchResults.isEmpty)
+                    SizedBox(
+                      height: height * .05,
+                    ),
+                  if (state is HomeSearchLoadingState &&
+                      cubit.homeSearchResults.isEmpty)
+                    const LinearProgressIndicator(),
                   SizedBox(
-                    height: height * .03,
+                    height: height * .05,
                   ),
+                  if (cubit.homeSearchResults.isEmpty)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        MyText(
+                          str: "Category",
+                          size: width * .035,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        SizedBox(
+                          height: height * .025,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                push(
+                                    context,
+                                    CategoryScreen(
+                                      title: 'Woman clothes',
+                                      products: cubit.womanClothesList,
+                                      productId: cubit.womanClothesListId,
+                                    ));
+                              },
+                              child: Container(
+                                width: width * .15,
+                                height: height * .08,
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.blue, width: 3),
+                                  shape: BoxShape.circle,
+                                  image: const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/dress.png',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                push(
+                                    context,
+                                    CategoryScreen(
+                                      title: 'Woman watches',
+                                      products: cubit.womanWatchesList,
+                                      productId: cubit.womanWatchesListId,
+                                    ));
+                              },
+                              child: Container(
+                                width: width * .15,
+                                height: height * .08,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.blue,
+                                    width: 3,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  image: const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/womanwatch.png',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                push(
+                                    context,
+                                    CategoryScreen(
+                                      title: 'Men clothes',
+                                      products: cubit.menClothesList,
+                                      productId: cubit.menClothesListId,
+                                    ));
+                              },
+                              child: Container(
+                                width: width * .15,
+                                height: height * .08,
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.blue, width: 3),
+                                  shape: BoxShape.circle,
+                                  image: const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/shirt.png',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                push(
+                                    context,
+                                    CategoryScreen(
+                                      title: 'Men watches',
+                                      products: cubit.menWatchesList,
+                                      productId: cubit.menWatchesListId,
+                                    ));
+                              },
+                              child: Container(
+                                width: width * .15,
+                                height: height * .08,
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.blue, width: 3),
+                                  shape: BoxShape.circle,
+                                  image: const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/watch.png',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                push(
+                                    context,
+                                    CategoryScreen(
+                                      title: 'Accessories',
+                                      products: cubit.accessoriesList,
+                                      productId: cubit.accessoriesListId,
+                                    ));
+                              },
+                              child: Container(
+                                width: width * .15,
+                                height: height * .08,
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.blue, width: 3),
+                                  shape: BoxShape.circle,
+                                  image: const DecorationImage(
+                                    image: AssetImage(
+                                      'assets/images/cole.png',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  if (cubit.homeSearchResults.isEmpty)
+                    SizedBox(
+                      height: height * .05,
+                    ),
                   if (state is! HomeSearchLoadingState ||
                       cubit.homeSearchResults.isEmpty)
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            MyText(
-                              str: "New Products",
-                              size: width * .035,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ],
+                        MyText(
+                          str: "New Products",
+                          size: width * .035,
+                          fontWeight: FontWeight.w600,
                         ),
                         SizedBox(
                           height: height * .03,
@@ -165,117 +333,12 @@ class HomeScreen extends StatelessWidget {
                             ],
                           ),
                         SizedBox(
-                          height: height * .03,
+                          height: height * .05,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            MyText(
-                              str: "Category",
-                              size: width * .035,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            const Spacer(),
-                          ],
-                        ),
-                        SizedBox(
-                          height: height * .025,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            GestureDetector(
-                              onTap: (){
-                                push(context,CategoryScreen(products: cubit.menClothesList, title: "Men Clothes"));
-                              },
-                              child: Container(
-                                width: width * .15,
-                                height: height * .08,
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.blue, width: 3),
-                                  shape: BoxShape.circle,
-                                  image: const DecorationImage(
-                                    image: AssetImage(
-                                      'assets/images/dress.png',
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: width * .15,
-                              height: height * .08,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.blue,
-                                  width: 3,
-                                ),
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/shirt.png',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: width * .15,
-                              height: height * .08,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.blue, width: 3),
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/shoes.png',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: width * .15,
-                              height: height * .08,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.blue, width: 3),
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/tie.png',
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              width: width * .15,
-                              height: height * .08,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(color: Colors.blue, width: 3),
-                                shape: BoxShape.circle,
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                    'assets/images/tie.png',
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: height * .015,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            MyText(
-                              str: "All Products",
-                              size: width * .035,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            const Spacer(),
-                          ],
+                        MyText(
+                          str: "All Products",
+                          size: width * .035,
+                          fontWeight: FontWeight.w600,
                         ),
                         SizedBox(
                           height: height * .03,
@@ -335,157 +398,158 @@ class HomeScreen extends StatelessWidget {
                           )
                       ],
                     ),
-                  if (state is HomeSearchLoadingState &&
-                      cubit.homeSearchResults.isEmpty)
-                    const LinearProgressIndicator(),
-                  ListView.builder(
-                    itemBuilder: (context, int index) {
-                      var prod = cubit.homeSearchResults[index];
-                      return Container(
-                        margin: EdgeInsets.all(width * .025),
-                        padding: EdgeInsets.all(width * .025),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(width * .025),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: width * .3,
-                                  height: height * .15,
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: NetworkImage(prod.prodImgUrl!),
+                  if (cubit.homeSearchResults.isNotEmpty)
+                    ListView.builder(
+                      itemBuilder: (context, int index) {
+                        var prod = cubit.homeSearchResults[index];
+                        return Container(
+                          margin: EdgeInsets.all(width * .025),
+                          padding: EdgeInsets.all(width * .025),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(width * .025),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: width * .3,
+                                    height: height * .15,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(prod.prodImgUrl!),
+                                      ),
+                                      color: Colors.white,
+                                      borderRadius:
+                                          BorderRadius.circular(width * .05),
                                     ),
-                                    color: Colors.white,
-                                    borderRadius:
-                                        BorderRadius.circular(width * .05),
                                   ),
-                                ),
-                                SizedBox(
-                                  width: width * .03,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          child: MyText(
-                                            str: prod.name!,
-                                            size: width * .04,
-                                            fontWeight: FontWeight.w400,
+                                  SizedBox(
+                                    width: width * .03,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            child: MyText(
+                                              str: prod.name!,
+                                              size: width * .04,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                            width: width * .3,
                                           ),
-                                          width: width * .3,
-                                        ),
-                                        SizedBox(
-                                          width: width * .02,
-                                        ),
-                                        Column(
-                                          children: [
-                                            SizedBox(
-                                              width: width * .15,
-                                              child: MyText(
-                                                str: "${prod.currentPrice} LE",
-                                                size: width * .03,
-                                                fontWeight: FontWeight.w500,
-                                                color: Colors.blue,
-                                              ),
-                                            ),
-                                            SizedBox(
-                                              height: width * .005,
-                                            ),
-                                            SizedBox(
-                                              width: width * .15,
-                                              child: Text(
-                                                "${prod.oldPrice} LE",
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: width * .022,
-                                                  decoration: TextDecoration
-                                                      .lineThrough,
+                                          SizedBox(
+                                            width: width * .02,
+                                          ),
+                                          Column(
+                                            children: [
+                                              SizedBox(
+                                                width: width * .15,
+                                                child: MyText(
+                                                  str:
+                                                      "${prod.currentPrice} LE",
+                                                  size: width * .03,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.blue,
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      height: height * .03,
-                                    ),
-                                    SizedBox(
-                                      width: width * .4,
-                                      child: Text(
-                                        prod.description!,
-                                        style: TextStyle(
-                                          color: Colors.grey,
-                                          fontSize: width * .022,
-                                          // decoration: TextDecoration.lineThrough,
-                                        ),
-                                        maxLines: 5,
+                                              SizedBox(
+                                                height: width * .005,
+                                              ),
+                                              SizedBox(
+                                                width: width * .15,
+                                                child: Text(
+                                                  "${prod.oldPrice} LE",
+                                                  style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: width * .022,
+                                                    decoration: TextDecoration
+                                                        .lineThrough,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ),
+                                      SizedBox(
+                                        height: height * .03,
+                                      ),
+                                      SizedBox(
+                                        width: width * .4,
+                                        child: Text(
+                                          prod.description!,
+                                          style: TextStyle(
+                                            color: Colors.grey,
+                                            fontSize: width * .022,
+                                            // decoration: TextDecoration.lineThrough,
+                                          ),
+                                          maxLines: 5,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: height * .03,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  MyElevatedButton(
+                                    onPressed: () {
+                                      // showOrderDialog(id: prodId, prod: prod);
+                                    },
+                                    widget: const MyText(
+                                      str: "Order",
+                                      color: Colors.white,
                                     ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: height * .03,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                MyElevatedButton(
-                                  onPressed: () {
-                                    // showOrderDialog(id: prodId, prod: prod);
-                                  },
-                                  widget: const MyText(
-                                    str: "Order",
-                                    color: Colors.white,
+                                    width: width * .65,
+                                    height: height * .06,
+                                    color: Colors.black,
                                   ),
-                                  width: width * .65,
-                                  height: height * .06,
-                                  color: Colors.black,
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    cubit.aadProductToCart(
-                                      name: prod.name!,
-                                      currentPrice: prod.currentPrice!,
-                                      prodImgUrl: prod.prodImgUrl!,
-                                      prodId: "",
-                                      counter: 1,
-                                    );
-                                  },
-                                  child: Icon(
-                                    Icons.shopping_cart,
-                                    color: Colors.white,
-                                    size: width * .075,
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.blueGrey,
-                                    shadowColor: Colors.red,
-                                    shape: const CircleBorder(),
-                                    padding: EdgeInsets.all(
-                                      width * .02,
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // cubit.aadProductToCart(
+                                      //   name: prod.name!,
+                                      //   currentPrice: prod.currentPrice!,
+                                      //   prodImgUrl: prod.prodImgUrl!,
+                                      //   prodId: "",
+                                      //   counter: 1,
+                                      // );
+                                    },
+                                    child: Icon(
+                                      Icons.shopping_cart,
+                                      color: Colors.white,
+                                      size: width * .075,
                                     ),
-                                    // ,// <-- SEE HERE
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.blueGrey,
+                                      shadowColor: Colors.red,
+                                      shape: const CircleBorder(),
+                                      padding: EdgeInsets.all(
+                                        width * .02,
+                                      ),
+                                      // ,// <-- SEE HERE
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                    itemCount: cubit.homeSearchResults.length,
-                    shrinkWrap: true,
-                    physics: const BouncingScrollPhysics(),
-                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      itemCount: cubit.homeSearchResults.length,
+                      shrinkWrap: true,
+                      physics: const BouncingScrollPhysics(),
+                    ),
                 ],
               ),
             ),
